@@ -4,7 +4,7 @@
   display: flex;
   background-image: url("../public/background.webp");
   background-size: cover;
- color: black;
+
 }
 
 .App-logo {
