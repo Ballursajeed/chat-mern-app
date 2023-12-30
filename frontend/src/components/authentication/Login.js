@@ -3,20 +3,91 @@ import { Button } from "@chakra-ui/button"
 import {  VStack } from '@chakra-ui/react';
 import {  Input, InputGroup, InputRightElement } from '@chakra-ui/input';
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { useToast } from '@chakra-ui/react'
+import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const Login = () => {
 
    const [show, setShow] = React.useState(false)
   const [email, setEmail] = React.useState()
   const [password, setPassword] = React.useState()
+   const [loading, setLoading] = React.useState(false);
+
+    const toast = useToast();
+
+     const baseURI = 'http://localhost:8000';
+
+       const navigate = useNavigate();
+
 
  const handleClick = () => {
    setShow(!show)
  }
 
 
- const submitHandler = () => {
+ const submitHandler = async() => {
+      setLoading(true);
+    if ( !email || !password ) {
+            toast({
+               title:"Please fill all the feild",
+               status:"warning",
+               duration: 5000,
+               isClosable:true,
+               position: "top"
+            });
+            setLoading(false)
+            return;
+    }
+   /* if (password !== confirmPassword) {
+         toast({
+               title:"Passwod did not match",
+               status:"warning",
+               duration: 5000,
+               isClosable:true,
+               position: "top"
+            });
+            return;
+    }*/
 
+   try {
+
+       const config = {
+            headers: {
+                "Content-type":"application/json",
+            },
+        };
+
+   const { data } = await axios.post(`${baseURI}/api/user/login`,{
+        email, password}, config
+   );
+
+          toast({
+               title:"Logged in  Successfull",
+               status:"success",
+               duration: 5000,
+               isClosable:true,
+               position: "top",
+            });
+
+  localStorage.setItem('userInfo',JSON.stringify(data));
+
+  setLoading(false);
+
+    navigate("/chats")
+
+   } catch(error) {
+           console.log("Error:",error);
+             toast({
+               title:"Error occured on signup page",
+               description:error.response.data.message,
+               status:"error",
+               duration: 5000,
+               isClosable:true,
+               position: "top"
+            });
+            setLoading(false);
+   }
  }
 
 
@@ -56,6 +127,7 @@ const Login = () => {
  width="100%"
  style={{ marginTop: 15 }}
  onClick={submitHandler}
+ isLoading={loading}
   >
     Log In
   </Button>

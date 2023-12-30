@@ -1,13 +1,41 @@
-import mognoose from "mongoose";
+import mongoose from "mongoose";
+import bcrypt from "bcrypt"
 
-const userShema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
 {
-
+ name:{
+   type:String,
+   required:true
+ },
+ email:{
+  type:String,
+  required:true,
+  unique:true
+ },
+ password:{
+    type:String,
+    required:true
+ },
+ pic:{
+      type:String,
+      default:"../public/emptyProfile.webp"
+    }
 },
 {
 	timestamps:true
 }
 );
+
+/*
+ userSchema.pre("save",async function (next) {
+     if (!this.isModified) {
+           next()
+     }
+
+   const salt = await bcrypt.genSalt(10);
+   this.password = await bcrypt.hash(this.password,salt);
+
+ }) */
 
 export const User = mongoose.model("User",userSchema);
 
